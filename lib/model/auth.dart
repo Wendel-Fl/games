@@ -2,13 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/constants.dart';
 
 class Auth with ChangeNotifier {
   String? _token;
-  String? _email;
-  String? _userId;
   DateTime? _expiresIn;
 
   bool get isAuth {
@@ -16,33 +15,19 @@ class Auth with ChangeNotifier {
     return _token != null && isValid;
   }
 
-  String? get token {
-    return isAuth ? _token : null;
-  }
-
-  String? get email {
-    return isAuth ? _email : null;
-  }
-
-  String? get userId {
-    return isAuth ? _userId : null;
-  }
-
   Future<void> login(String email, String password) async {
+    // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    // String token = sharedPreferences.getString();
     final response = await http.post(
       Uri.parse('${Constants.url}/login'),
-      body: jsonEncode(
-        {
-          'email': email,
-          'password': password,
-          'returnSecureToken': true,
-        },
-      ),
+      headers: {
+        'Authorization': 'Bearer $_token',
+      },
     );
-    // final body = jsonDecode(response.body);
-    if(response.body.isNotEmpty) {
-      json.decode(response.body);
+    if (response.statusCode == 200) {
+      print(json.decode(response.body));
+    } else {
+      print(response.statusCode);
     }
-    print(response.body);
   }
 }

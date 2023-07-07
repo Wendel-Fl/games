@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'dart:convert';
 
-import '../model/auth.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -11,21 +11,24 @@ class AuthForm extends StatefulWidget {
 }
 
 class _AuthFormState extends State<AuthForm> {
-  final _passwordController = TextEditingController();
+  // final _emailController = TextEditingController();
+  // final _senhaController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final Map<String, String> _authData = {
-    /*
-  email: 'candidato@tabulero.com.br',
-  senha: '123456'
-  */
     'email': '',
-    'password': ''
+    'senha': ''
   };
 
   bool _isLoading = false;
   bool _isObscured = false;
 
-  Future<void> _submit() async {
+  @override
+  void initState() {
+    super.initState();
+    _isObscured = true;
+  }
+
+  /*Future<void> submit() async {
     final isValid = _formKey.currentState?.validate() ?? false;
 
     if (!isValid) return;
@@ -33,21 +36,37 @@ class _AuthFormState extends State<AuthForm> {
     setState(() => _isLoading = true);
 
     _formKey.currentState?.save();
-    Auth auth = Provider.of(context, listen: false);
 
-    await auth.login(_authData['email']!, _authData['password']!);
-    /*try {
-    } catch (error) {
-      print('Erro');
-    }*/
+    Auth auth = Provider.of(context, listen: false);
+    await auth.login(_authData['email']!, _authData['senha']!);
+    // try {
+    // } catch (error) {
+    //   print('Erro');
+    // }
 
     setState(() => _isLoading = false);
-  }
+  }*/
 
-  @override
-  void initState() {
-    super.initState();
-    _isObscured = true;
+  Future<void> submit() async {
+    final isValid = _formKey.currentState?.validate() ?? false;
+
+    if (!isValid) return;
+
+    setState(() => _isLoading = true);
+
+    _formKey.currentState?.save();
+
+    var url = Uri.parse('http://206.189.206.44:8080/login');
+    var response = await http.post(
+      url,
+      body: jsonEncode(_authData),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    // setState(() => _isLoading = false);
+
+    print(response.statusCode);
+    print(response.body);
   }
 
   @override
@@ -68,10 +87,12 @@ class _AuthFormState extends State<AuthForm> {
           key: _formKey,
           child: Column(
             children: [
-              const Text('E-mail'),
               TextFormField(
+                // controller: _emailController,
+                textAlign: TextAlign.center,
                 decoration: const InputDecoration(
-                  label: Center(child: Text('Informe seu e-mail...')),
+                  label: Text('E-mail'),
+                  hintText: 'Informe seu e-mail...',
                 ),
                 keyboardType: TextInputType.emailAddress,
                 onSaved: (email) => _authData['email'] = email ?? '',
@@ -84,13 +105,14 @@ class _AuthFormState extends State<AuthForm> {
                 },
               ),
               const SizedBox(height: 20),
-              const Text('Senha'),
               TextFormField(
-                keyboardType: TextInputType.emailAddress,
+                // controller: _senhaController,
+                keyboardType: TextInputType.visiblePassword,
+                textAlign: TextAlign.center,
                 obscureText: _isObscured,
-                controller: _passwordController,
                 decoration: InputDecoration(
-                  label: const Center(child: Text('Informe sua senha...')),
+                  label: const Text('Senha'),
+                  hintText: 'Informe sua senha...',
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
@@ -102,10 +124,10 @@ class _AuthFormState extends State<AuthForm> {
                         : const Icon(Icons.visibility_off),
                   ),
                 ),
-                onSaved: (password) => _authData['password'] = password ?? '',
-                validator: (password) {
-                  final newPassword = password ?? '';
-                  if (newPassword.isEmpty || newPassword.length < 5) {
+                onSaved: (senha) => _authData['senha'] = senha ?? '',
+                validator: (senha) {
+                  final newSenha = senha ?? '';
+                  if (newSenha.isEmpty || newSenha.length < 5) {
                     return 'Informe uma senha válida';
                   }
                   return null;
@@ -113,19 +135,20 @@ class _AuthFormState extends State<AuthForm> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _submit,
+                onPressed: () {
+                  submit();
+                },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 20.0)),
                 child: const Text('Entrar'),
-              )
+              ),
             ],
           ),
         ),
       ),
-      // key: _formKey,
     );
   }
 }
