@@ -39,7 +39,10 @@ class Auth with ChangeNotifier {
         },
       ),
     );
-    final body = jsonDecode(response.body);
-    print(body);
+    // final body = jsonDecode(response.body);
+    if(response.body.isNotEmpty) {
+      json.decode(response.body);
+    }
+    print(response.body);
   }
 }
