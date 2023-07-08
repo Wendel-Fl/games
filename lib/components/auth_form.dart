@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../model/auth.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -19,8 +22,8 @@ class _AuthFormState extends State<AuthForm> {
     'senha': ''
   };
 
-  bool _isLoading = false;
   bool _isObscured = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -56,17 +59,25 @@ class _AuthFormState extends State<AuthForm> {
 
     _formKey.currentState?.save();
 
-    var url = Uri.parse('http://206.189.206.44:8080/login');
-    var response = await http.post(
-      url,
-      body: jsonEncode(_authData),
-      headers: {'Content-Type': 'application/json'},
-    );
+    Auth auth = Provider.of(context, listen: false);
 
-    // setState(() => _isLoading = false);
+    await auth.login(_authData['email']!, _authData['senha']!);
+    // try {
+    // } catch (error) {
+    //   print('Erro');
+    // }
 
-    print(response.statusCode);
-    print(response.body);
+    // var url = Uri.parse('http://206.189.206.44:8080/login');
+    // var response = await http.post(
+    //   url,
+    //   body: jsonEncode(_authData),
+    //   headers: {'Content-Type': 'application/json'},
+    // );
+
+    setState(() => _isLoading = false);
+
+    // print(response.statusCode);
+    // print(response.body);
   }
 
   @override

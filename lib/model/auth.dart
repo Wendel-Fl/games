@@ -8,6 +8,7 @@ import '../utils/constants.dart';
 
 class Auth with ChangeNotifier {
   String? _token;
+  String? _email;
   DateTime? _expiresIn;
 
   bool get isAuth {
@@ -15,19 +16,39 @@ class Auth with ChangeNotifier {
     return _token != null && isValid;
   }
 
+  String? get email {
+    return isAuth ? _email : null;
+  }
+
   Future<void> login(String email, String password) async {
     // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     // String token = sharedPreferences.getString();
+    final url = Uri.parse('http://206.189.206.44:8080/login');
     final response = await http.post(
-      Uri.parse('${Constants.url}/login'),
-      headers: {
-        'Authorization': 'Bearer $_token',
-      },
+      url,
+      body: jsonEncode(
+        {
+          'email': email,
+          'senha': password,
+        },
+      ),
+      headers: {'Content-Type': 'application/json'},
     );
+
+    // final body = jsonDecode(response.body);
+
+    // if (body['error'] != null) {
+    //   print('erro');
+    // } else {
+    //   _email = body['email'];
+    //
+    // }
+
     if (response.statusCode == 200) {
       print(json.decode(response.body));
     } else {
       print(response.statusCode);
     }
+    notifyListeners();
   }
 }
