@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:games/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 
-import '../model/auth.dart';
+import 'auth.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -14,13 +12,9 @@ class AuthForm extends StatefulWidget {
 }
 
 class _AuthFormState extends State<AuthForm> {
-  // final _emailController = TextEditingController();
-  // final _senhaController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final Map<String, String> _authData = {
-    'email': '',
-    'senha': ''
-  };
+  final Map<String, String> _authData = {'email': '', 'senha': ''};
+  late final Auth controller;
 
   bool _isObscured = false;
   bool _isLoading = false;
@@ -29,26 +23,20 @@ class _AuthFormState extends State<AuthForm> {
   void initState() {
     super.initState();
     _isObscured = true;
+
+    controller = context.read<Auth>();
+    controller.addListener(() {
+      if (controller.state == AuthState.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erro na Autenticação'),
+          ),
+        );
+      } else if (controller.state == AuthState.success) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.gameOverview);
+      }
+    });
   }
-
-  /*Future<void> submit() async {
-    final isValid = _formKey.currentState?.validate() ?? false;
-
-    if (!isValid) return;
-
-    setState(() => _isLoading = true);
-
-    _formKey.currentState?.save();
-
-    Auth auth = Provider.of(context, listen: false);
-    await auth.login(_authData['email']!, _authData['senha']!);
-    // try {
-    // } catch (error) {
-    //   print('Erro');
-    // }
-
-    setState(() => _isLoading = false);
-  }*/
 
   Future<void> submit() async {
     final isValid = _formKey.currentState?.validate() ?? false;
@@ -60,24 +48,9 @@ class _AuthFormState extends State<AuthForm> {
     _formKey.currentState?.save();
 
     Auth auth = Provider.of(context, listen: false);
-
     await auth.login(_authData['email']!, _authData['senha']!);
-    // try {
-    // } catch (error) {
-    //   print('Erro');
-    // }
-
-    // var url = Uri.parse('http://206.189.206.44:8080/login');
-    // var response = await http.post(
-    //   url,
-    //   body: jsonEncode(_authData),
-    //   headers: {'Content-Type': 'application/json'},
-    // );
 
     setState(() => _isLoading = false);
-
-    // print(response.statusCode);
-    // print(response.body);
   }
 
   @override
@@ -99,11 +72,11 @@ class _AuthFormState extends State<AuthForm> {
           child: Column(
             children: [
               TextFormField(
-                // controller: _emailController,
                 textAlign: TextAlign.center,
                 decoration: const InputDecoration(
-                  label: Text('E-mail'),
+                  labelText: 'E-mail',
                   hintText: 'Informe seu e-mail...',
+                  border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.emailAddress,
                 onSaved: (email) => _authData['email'] = email ?? '',
@@ -117,13 +90,13 @@ class _AuthFormState extends State<AuthForm> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                // controller: _senhaController,
                 keyboardType: TextInputType.visiblePassword,
                 textAlign: TextAlign.center,
                 obscureText: _isObscured,
                 decoration: InputDecoration(
                   label: const Text('Senha'),
                   hintText: 'Informe sua senha...',
+                  border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     onPressed: () {
                       setState(() {
@@ -146,9 +119,11 @@ class _AuthFormState extends State<AuthForm> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  submit();
-                },
+                onPressed: controller.state == AuthState.loading
+                    ? null
+                    :   () {
+                        submit();
+                      },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
