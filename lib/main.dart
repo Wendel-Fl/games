@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'model/auth.dart';
-import 'page/auth_page.dart';
-import 'page/game_overview_page.dart';
+import 'features/auth/controller/auth_controller.dart';
+import 'features/game/controller/game_controller.dart';
+import 'features/game/model/game.dart';
+import 'features/game/page/game_detail_page.dart';
+import 'page/auth_or_home_page.dart';
 import 'utils/app_routes.dart';
 
 void main() {
@@ -18,7 +20,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => Auth())
+        ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProxyProvider<AuthController, GameController>(
+          create: (_) => GameController('', []),
+          update: (ctx, auth, previous) {
+            return GameController(
+              auth.token ?? '',
+              previous?.games ?? [],
+            );
+          },
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -29,8 +40,8 @@ class MyApp extends StatelessWidget {
           ),
         ),
         routes: {
-          AppRoutes.auth: (ctx) => const AuthPage(),
-          AppRoutes.gameOverview: (ctx) => const GameOverviewPage(),
+          AppRoutes.authOrGameOverview: (ctx) => const AuthOrHomePage(),
+          AppRoutes.gameDetail: (ctx) => const GameDetailPage(),
         },
         debugShowCheckedModeBanner: false,
       ),
