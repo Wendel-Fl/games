@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:games/features/auth/components/logout_button.dart';
+import 'package:provider/provider.dart';
 
 import '../model/game.dart';
 
@@ -7,13 +9,36 @@ class GameDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final game = ModalRoute.of(context)!.settings.arguments as Game;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Nome do Jogo'),
-        actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.logout))],
+        centerTitle: true,
+        title: Text(game.nome),
+        actions: const [LogoutButton()],
       ),
-      body: const Center(
-        child: Text('Detalhes do jogo'),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Row(),
+            Container(
+              width: 300,
+              child: Text(game.descricao),
+            ),
+            Container(),
+            Row(
+              children: [
+                const Icon(Icons.info_outline),
+                Text(
+                  game.expansao == true
+                      ? 'Este é um jogo do tipo expansão'
+                      : '',
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

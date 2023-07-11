@@ -32,10 +32,9 @@ class AuthController with ChangeNotifier {
         body: jsonEncode({'email': email, 'senha': password}),
         headers: {'Content-Type': 'application/json'},
       );
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       _token = response.body;
-      await sharedPreferences.setString('token', '$_token');
+      await prefs.setString('token', '$_token');
       notifyListeners();
     } catch (e) {
       state = AuthState.error;

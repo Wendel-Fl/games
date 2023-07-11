@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:games/utils/app_routes.dart';
+import 'package:games/features/auth/components/logout_button.dart';
 import 'package:provider/provider.dart';
 
+import '../components/game_list.dart';
 import '../controller/game_controller.dart';
 import '../model/game.dart';
 
@@ -26,22 +27,19 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
     });
   }
 
+  void logout() async {}
+
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<GameController>(context, listen: false);
-    final List<Game> loadGames = provider.games;
+    final gameController = Provider.of<GameController>(context, listen: false);
+    final List<Game> loadGames = gameController.games;
     final deviceSize = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Jogos'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.logout),
-          )
-        ],
+        actions: const [LogoutButton()],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -54,43 +52,15 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: loadGames.length,
-                            itemBuilder: (ctx, index) =>
-                                ChangeNotifierProvider.value(
-                              value: loadGames[index],
-                              child: Consumer<Game>(
-                                builder: (ctx, game, _) => ListTile(
-                                  shape: RoundedRectangleBorder(
-                                    side: BorderSide(
-                                      color: Theme.of(context).colorScheme.outline,
-                                    ),
-                                    borderRadius:
-                                    const BorderRadius.all(Radius.circular(12)),
-                                  ),
-                                  title: Text(game.nome),
-                                  subtitle: Text('$game'),
-                                  leading: CircleAvatar(
-                                    backgroundImage:
-                                        NetworkImage(game.urlCapa),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).pushNamed(
-                                      AppRoutes.gameDetail,
-                                      arguments: game,
-                                    );
-                                  },
-                                ),
-                              ),
+                          GameList(loadGames),
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 10.0),
+                            child: ElevatedButton(
+                              onPressed: () {
+                                gameController.nextPage();
+                              },
+                              child: const Text('Carregar mais...'),
                             ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              provider.nextPage();
-                            },
-                            child: const Text('Carregar mais...'),
                           ),
                         ],
                       ),
