@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:games/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 
-import 'auth.dart';
+import '../controller/auth_controller.dart';
 
 class AuthForm extends StatefulWidget {
   const AuthForm({super.key});
@@ -14,7 +14,7 @@ class AuthForm extends StatefulWidget {
 class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, String> _authData = {'email': '', 'senha': ''};
-  late final Auth controller;
+  late final AuthController controller;
 
   bool _isObscured = false;
   bool _isLoading = false;
@@ -24,7 +24,7 @@ class _AuthFormState extends State<AuthForm> {
     super.initState();
     _isObscured = true;
 
-    controller = context.read<Auth>();
+    controller = context.read<AuthController>();
     controller.addListener(() {
       if (controller.state == AuthState.error) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -47,7 +47,7 @@ class _AuthFormState extends State<AuthForm> {
 
     _formKey.currentState?.save();
 
-    Auth auth = Provider.of(context, listen: false);
+    AuthController auth = Provider.of(context, listen: false);
     await auth.login(_authData['email']!, _authData['senha']!);
 
     setState(() => _isLoading = false);

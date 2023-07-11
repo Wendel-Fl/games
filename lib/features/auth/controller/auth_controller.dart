@@ -1,14 +1,13 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:games/utils/constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../utils/constants.dart';
-
 enum AuthState { idle, success, error, loading }
 
-class Auth with ChangeNotifier {
+class AuthController with ChangeNotifier {
   String? _token;
   var state = AuthState.idle;
   // DateTime? _expiresIn;
