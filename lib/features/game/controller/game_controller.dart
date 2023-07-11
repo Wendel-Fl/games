@@ -57,7 +57,7 @@ class GameController with ChangeNotifier {
   }
 
   // GET
-  Future<void> loadCurrentGame(int idJogo) async {
+  Future<Game?> loadCurrentGame(int idJogo) async {
     /*http://206.189.206.44:8080/api/jogo/{id}*/
 
     final url = '${Constants.urlJogo}/$idJogo';
@@ -72,10 +72,9 @@ class GameController with ChangeNotifier {
       final jsonResponse = jsonDecode(response.body);
       final game = Game.fromJson(jsonResponse);
       notifyListeners();
+      return game;
     } else {
-      print(
-        'Erro ao carregar os jogos. Código de status: ${response.statusCode}',
-      );
+      return null;
     }
   }
 }
