@@ -1,6 +1,6 @@
 class AppRoutes {
-  static const authOrGameOverview = '/';
+  static const authOrHome = '/';
   static const auth = '/auth';
-  static const gameOverview = '/game-overview';
+  static const home = '/home';
   static const gameDetail = '/game-detail';
 }
