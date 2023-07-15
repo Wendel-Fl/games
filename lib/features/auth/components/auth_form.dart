@@ -13,6 +13,7 @@ class AuthForm extends StatefulWidget {
 
 class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
+  final _passwordFocus = FocusNode();
   final Map<String, String> _authData = {'email': '', 'senha': ''};
   late final AuthController controller;
 
@@ -23,19 +24,34 @@ class _AuthFormState extends State<AuthForm> {
   void initState() {
     super.initState();
     _isObscured = true;
-
     controller = context.read<AuthController>();
+
     controller.addListener(() {
       if (controller.state == AuthState.error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Erro na Autenticação'),
+            backgroundColor: Colors.redAccent,
+            content: Row(
+              children: [
+                Icon(
+                  Icons.error_outline_outlined,
+                  color: Colors.white,
+                ),
+                Text(' Erro na Autenticação'),
+              ],
+            ),
           ),
         );
       } else if (controller.state == AuthState.success) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.gameOverview);
+        Navigator.of(context).pushReplacementNamed(AppRoutes.home);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _passwordFocus.dispose();
   }
 
   Future<void> submit() async {
@@ -65,7 +81,7 @@ class _AuthFormState extends State<AuthForm> {
       color: Colors.white,
       child: Container(
         padding: const EdgeInsets.all(16.0),
-        height: 320,
+        height: 330,
         width: deviceSize.width * 0.75,
         child: Form(
           key: _formKey,
@@ -73,13 +89,21 @@ class _AuthFormState extends State<AuthForm> {
             children: [
               TextFormField(
                 textAlign: TextAlign.center,
+                keyboardType: TextInputType.emailAddress,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                      fontSize: 18,
+                  fontWeight: FontWeight.normal
+                ),
                 decoration: const InputDecoration(
                   labelText: 'E-mail',
                   hintText: 'Informe seu e-mail...',
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: TextInputType.emailAddress,
                 onSaved: (email) => _authData['email'] = email ?? '',
+                onFieldSubmitted: (_) => FocusScope.of(context).requestFocus(
+                  _passwordFocus,
+                ),
                 validator: (email) {
                   final newEmail = email ?? '';
                   if (newEmail.trim().isEmpty || !newEmail.contains('@')) {
@@ -90,9 +114,15 @@ class _AuthFormState extends State<AuthForm> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-                keyboardType: TextInputType.visiblePassword,
-                textAlign: TextAlign.center,
                 obscureText: _isObscured,
+                focusNode: _passwordFocus,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.visiblePassword,
+                style: const TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal
+                ),
                 decoration: InputDecoration(
                   label: const Text('Senha'),
                   hintText: 'Informe sua senha...',
@@ -108,6 +138,7 @@ class _AuthFormState extends State<AuthForm> {
                         : const Icon(Icons.visibility_off),
                   ),
                 ),
+                onFieldSubmitted: (_) => submit(),
                 onSaved: (senha) => _authData['senha'] = senha ?? '',
                 validator: (senha) {
                   final newSenha = senha ?? '';
@@ -121,15 +152,19 @@ class _AuthFormState extends State<AuthForm> {
               ElevatedButton(
                 onPressed: controller.state == AuthState.loading
                     ? null
-                    :   () {
+                    : () {
                         submit();
+                        FocusManager.instance.primaryFocus?.unfocus();
                       },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0)),
-                child: const Text('Entrar'),
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0)),
+                child: const Text(
+                  'Entrar',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
             ],
           ),

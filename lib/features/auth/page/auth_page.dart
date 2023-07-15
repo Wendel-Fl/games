@@ -10,6 +10,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,13 +18,14 @@ class _AuthPageState extends State<AuthPage> {
         children: [
           Container(
             decoration: const BoxDecoration(
-              color: Color.fromRGBO(1, 1, 10, 0.8549019607843137),
-              /*gradient: LinearGradient(
+              gradient: LinearGradient(
                 colors: [
-                  Color.fromRGBO(0, 2, 12, 0.84),
-                  Color.fromRGBO(6, 9, 38, 0.79),
+                  Color.fromRGBO(0, 3, 17, 0.8392156862745098),
+                  Color.fromRGBO(2, 3, 24, 0.788235294117647),
                 ],
-              ),*/
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
           SizedBox(
@@ -38,14 +40,11 @@ class _AuthPageState extends State<AuthPage> {
                     horizontal: 20.0,
                   ),
                   margin: const EdgeInsets.only(bottom: 20.0),
-                  /*decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color.fromRGBO(14, 15, 21, 0.1),
-                  ),*/
                   child: Text(
                     'Login',
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                      fontFamily: 'EduNSWACTFoundation',
                       fontSize: 45,
                       color: Theme.of(context)
                           .primaryTextTheme
