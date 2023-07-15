@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:games/features/auth/components/logout_button.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/game_list.dart';
 import '../controller/game_controller.dart';
@@ -25,9 +26,15 @@ class _GameOverviewPageState extends State<GameOverviewPage> {
     ).loadGames().then((value) {
       setState(() => _isLoading = false);
     });
+    getCred();
   }
 
-  void logout() async {}
+  void getCred() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.getString('token');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
