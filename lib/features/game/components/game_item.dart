@@ -14,7 +14,7 @@ class GameItem extends StatelessWidget {
   //   final gameList = await Provider.of<GameController>(
   //     context,
   //     listen: false,
-  //   ).loadGames(0);
+  //   ).loadGames(page);
   //
   //   for (var game in gameList) {
   //     final currentGame = game.id;
