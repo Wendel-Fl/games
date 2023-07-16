@@ -1,6 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:image_network/image_network.dart';
-import 'package:games/features/auth/components/logout_button.dart';
+
+import '../../auth/components/logout_button.dart';
 import '../model/game.dart';
 
 class GameDetailPage extends StatefulWidget {
@@ -63,22 +64,16 @@ class _GameDetailPageState extends State<GameDetailPage> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(right: 15.0),
-                      child: ImageNetwork(
-                        image: game.urlCapa,
-                        height: 120,
+                      child: CachedNetworkImage(
+                        imageUrl: game.urlCapa,
                         width: 120,
-                        onPointer: true,
-                        debugPrint: false,
-                        fullScreen: false,
-                        fitAndroidIos: BoxFit.cover,
-                        fitWeb: BoxFitWeb.cover,
-                        onLoading: const CircularProgressIndicator(
-                          color: Colors.indigoAccent,
-                        ),
-                        onError: const Icon(
-                          Icons.error,
-                          color: Colors.red,
-                        ),
+                        height: 120,
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) =>
+                                CircularProgressIndicator(
+                                    value: downloadProgress.progress),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
                     ),
                     Expanded(

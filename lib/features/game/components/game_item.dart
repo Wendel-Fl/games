@@ -1,5 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:image_network/image_network.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/app_routes.dart';
@@ -50,20 +50,14 @@ class GameItem extends StatelessWidget {
             '${game.ano}',
             style: Theme.of(context).textTheme.copyWith().bodySmall,
           ),
-          leading: ImageNetwork(
-            image: game.urlCapa,
+          leading: CachedNetworkImage(
+            fit: BoxFit.cover,
+            imageUrl: game.urlCapa,
             height: 50,
             width: 50,
-            curve: Curves.easeIn,
-            onPointer: true,
-            debugPrint: false,
-            fullScreen: false,
-            fitAndroidIos: BoxFit.cover,
-            fitWeb: BoxFitWeb.cover,
-            borderRadius: BorderRadius.circular(70),
-            onLoading: const CircularProgressIndicator(
-              color: Colors.indigoAccent,
-            ),
+            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
           onTap: () {
             Navigator.of(context).pushNamed(
