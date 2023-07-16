@@ -3,7 +3,6 @@ import 'package:image_network/image_network.dart';
 import 'package:provider/provider.dart';
 
 import '../../../utils/app_routes.dart';
-import '../controller/game_controller.dart';
 import '../model/game.dart';
 
 class GameItem extends StatelessWidget {
